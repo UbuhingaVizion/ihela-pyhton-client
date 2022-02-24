@@ -7,7 +7,9 @@ info@ubuviz.com
 Python client for integration
 """
 
-import logging, json, string
+import json
+import logging
+import string
 import urllib.parse
 
 try:
@@ -33,7 +35,7 @@ iHela_ENDPOINTS = {
 }
 
 
-class MerchantAuthorizationClient(object):
+class MerchantAuthorizationClient:
     provider_name = "iHelá"
 
     def __init__(self, client_id, client_secret, state=None, test=False, ihela_url=None):
@@ -82,15 +84,17 @@ class MerchantAuthorizationClient(object):
         if not self.state:
             self.state = "".join(secrets.choice(chars) for _ in range(20))
 
-        auth_dict = dict(
-            state=self.state,  # Generate Random
-            response_type=response_type,
-            client_id=self.client_id,
-            redirect_uri=urllib.parse.quote(redirect_uri),
-        )
+        auth_dict = {
+            "state": self.state,
+            "response_type": response_type,
+            "client_id": self.client_id,
+            "redirect_uri": urllib.parse.quote(redirect_uri),
+        }
         # auth_parms = urllib.parse.urlencode(auth_dict)
-        auth_parms = "state={state}&response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}".format(
-            **auth_dict
+        auth_parms = (
+            "state={state}&response_type={response_type}&client_id={client_id}&redirect_uri={redirect_uri}".format(
+                **auth_dict
+            )
         )
 
         # return requests.utils.requote_uri(self.get_url(iHela_AUTH_URL) + "?" + auth_parms)

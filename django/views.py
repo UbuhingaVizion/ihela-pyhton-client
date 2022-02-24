@@ -1,8 +1,9 @@
-from ihela_client.client import Client as iHelaAPIClient
-from ihelaprovider.base import iHelaAdapter
-from allauth.socialaccount.providers.oauth2.views import OAuth2View
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client, OAuth2Error
 from allauth.socialaccount.models import SocialLogin
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client, OAuth2Error
+from allauth.socialaccount.providers.oauth2.views import OAuth2View
+from ihelaprovider.base import iHelaAdapter
+
+from ihela_client.client import Client as iHelaAPIClient
 
 
 class iHelaClientBaseView(OAuth2View):

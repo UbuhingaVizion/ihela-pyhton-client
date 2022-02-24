@@ -7,9 +7,10 @@ info@ubuviz.com
 Python client for integration
 """
 
-import logging, json, string
+import json
+import logging
+import string
 import urllib.parse
-
 
 try:
     import secrets
@@ -37,10 +38,8 @@ iHela_ENDPOINTS = {
 }
 
 
-class MerchantClient(object):
-    def __init__(
-        self, client_id, client_secret, state=None, prod=False, ihela_url=None
-    ):
+class MerchantClient:
+    def __init__(self, client_id, client_secret, state=None, prod=False, ihela_url=None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.auth_token_object = None
@@ -96,17 +95,13 @@ class MerchantClient(object):
             # TODO : Delete this line for production
             logger.debug(auth_data)
 
-        auth_ = requests.post(
-            self.get_url(url), auth=(self.client_id, self.client_secret), data=auth_data
-        )
+        auth_ = requests.post(self.get_url(url), auth=(self.client_id, self.client_secret), data=auth_data)
         self.auth_token_object = self.get_response(auth_)
 
         return auth_
 
     def is_authenticated(self):
-        if isinstance(self.auth_token_object, dict) and self.auth_token_object.get(
-            "access_token", None
-        ):
+        if isinstance(self.auth_token_object, dict) and self.auth_token_object.get("access_token", None):
             return True
         return False
 
@@ -152,9 +147,7 @@ class MerchantClient(object):
                 "redirect_uri": redirect_uri,
             }
             url = iHela_ENDPOINTS["BILL_INIT"]
-            bill_ = requests.post(
-                self.get_url(url), data=bill_data, headers=self.get_auth_headers()
-            )
+            bill_ = requests.post(self.get_url(url), data=bill_data, headers=self.get_auth_headers())
             bill_initiated = self.get_response(bill_)
 
             return bill_initiated
@@ -164,16 +157,12 @@ class MerchantClient(object):
     def verify_bill(self, code, reference):
         bill_data = {"code": code, "reference": reference}
         url = iHela_ENDPOINTS["BILL_VERIFY"]
-        bill_ = requests.post(
-            self.get_url(url), data=bill_data, headers=self.get_auth_headers()
-        )
+        bill_ = requests.post(self.get_url(url), data=bill_data, headers=self.get_auth_headers())
         bill_verified = self.get_response(bill_)
 
         return bill_verified
 
-    def cashin_client(
-        self, bank_slug, account, amount, merchant_reference, description
-    ):
+    def cashin_client(self, bank_slug, account, amount, merchant_reference, description):
         if self.is_authenticated():
             cashin_data = {
                 "bank_slug": bank_slug,
@@ -183,9 +172,7 @@ class MerchantClient(object):
                 "description": description,
             }
             url = iHela_ENDPOINTS["CASHIN"]
-            cashin_ = requests.post(
-                self.get_url(url), data=cashin_data, headers=self.get_auth_headers()
-            )
+            cashin_ = requests.post(self.get_url(url), data=cashin_data, headers=self.get_auth_headers())
             cashin = self.get_response(cashin_)
 
             return cashin
@@ -207,9 +194,7 @@ if __name__ == "__main__":
     client_id = "4sS7OWlf8pqm04j1ZDtvUrEVSZjlLwtfGUMs2XWZ"
     client_secret = "HN7osYwSJuEOO4MEth6iNlBS8oHm7LBhC8fejkZkqDJUrvVQodKtO55bMr845kmplSlfK3nxFcEk2ryiXzs1UW1YfVP5Ed6Yw0RR6QmnwsQ7iNJfzTgeehZ2XM9mmhC3"
 
-    cl = MerchantClient(
-        client_id, client_secret
-    )  # , ihela_url="http://127.0.0.1:8080/")
+    cl = MerchantClient(client_id, client_secret)  # , ihela_url="http://127.0.0.1:8080/")
     print("\nBILL INIT : ", cl.ihela_base_url)
 
     bill = cl.init_bill(
@@ -223,9 +208,7 @@ if __name__ == "__main__":
     print(bill)
 
     if bill["bill"].get("merchant_reference"):
-        bill_verif = cl.verify_bill(
-            bill["bill"]["merchant_reference"], bill["bill"]["code"]
-        )
+        bill_verif = cl.verify_bill(bill["bill"]["merchant_reference"], bill["bill"]["code"])
 
         print("\nBILL VERIFY : ", bill_verif)
 
@@ -237,8 +220,6 @@ if __name__ == "__main__":
 
     print("\nCLIENT : ", client)
 
-    cashin = cl.cashin_client(
-        "MF1-0001", "000016-01", 20000, str(secrets.token_hex(10)), "Cashin description"
-    )
+    cashin = cl.cashin_client("MF1-0001", "000016-01", 20000, str(secrets.token_hex(10)), "Cashin description")
 
     print("\nCASHIN : ", cashin)
